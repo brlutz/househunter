@@ -1,0 +1,4 @@
+*.exe
+zillow_key.conf
+.vscode/
+__pycache__/
