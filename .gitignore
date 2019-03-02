@@ -2,3 +2,4 @@
 zillow_key.conf
 .vscode/
 __pycache__/
+geckodriver.log
