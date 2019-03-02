@@ -18,7 +18,7 @@ from pprint import pprint
 
 
 class HouseDetail:
-    def __init___(self,
+    def __init__(self,
            url, address, zipcode, city,
            price,estimatePrice,
            beds,baths,
@@ -83,7 +83,7 @@ class HouseDetail:
         x["MSDistance"] = self.MSDistance
         x["ESDistance"] = self.ESDistance 
         x["MLSNumber"] = self.MLSNumber
-        pprint(vars(x))
+
         return x
 
 def get_price(soup):
@@ -239,7 +239,9 @@ sourceUrlObjs = sourceUrls.find().limit(1)
 links = []
 for house in sourceUrlObjs:
     houseData = get_house_data(driver, house["Url"])
-    houseData.Seralized()
+    #houseData.Seralized()
+    attrs = vars(houseData)
+    print (', '.join("%s: %s" % item for item in attrs.items()))
 
 
 
