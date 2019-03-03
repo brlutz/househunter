@@ -174,6 +174,14 @@ def get_floor_size(soup):
         return floorSize
     except:
         return 'None'
+
+def get_parking(soup):
+    try:
+        parking_regex = re.compile('Parking:')
+        parking = soup.find(text=parking_regex).find_next().text
+        return parking
+    except:
+        return 'None'
     
 def get_year_built(soup):
     try:
@@ -227,7 +235,7 @@ def get_house_data(driver,link):
     squareFeet = get_floor_size(soup)
     stories = get_stories(soup)
     roomCount = "roomCount"
-    parking = "parking"
+    parking = get_parking(soup)
     type = "type"
     yearBuilt = get_year_built(soup)
     heating = "heating"
