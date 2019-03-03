@@ -112,58 +112,86 @@ def get_lot_size(soup):
     except:
         return 'None'
 def get_address(soup):
+
     try:
-        obj = soup.find(None,class_="hdp-home-header-st-addr").text.split(',')
-        address = obj[0]
+        address = soup.find("div",class_="hdp-home-header-st-addr").text
         return address
-    except:
-        return 'None'
+    except: 
+        try: #Full page view
+            #obj = soup.find("header",class_="ds-address-container").text.split(',')
+            address = soup.find("h1",class_="ds-address-container").findNext('span').text.replace(",","")
+            return address
+        except:
+            return 'None'
+
 def get_city(soup):
     try:
-        obj = soup.find("header",class_="hdp-home-header-st-addr").findNext('div').text.split(',')
+        city = soup.find("div",class_="hdp-home-header-st-addr").findNext('div').text.split(',')[0]
         #obj = soup.find("header",class_="zsg-content-header addr").text.split(',')
-        city = obj[1]
+        obj = soup.find("h1",class_="ds-address-container").findNext('span').text
         return city
     except:
-        return 'None'
+        try:
+            city = soup.find("h1",class_="ds-address-container").findNext('span').text
+            return city
+        except:
+            return 'None'
+        
     
 def get_zip(soup):
     try:
-        obj = soup.find("header",class_="zsg-content-header addr").text.split(',')
-        list = obj[2].split()
-        zip_code = list[1]
-        return zip_code
+        zip = soup.find("div",class_="hdp-home-header-st-addr").findNext('div').text.split()[-1:][0]
+        return zip
     except:
+        try:
+
+            zip = soup.find("div",class_="hdp-home-header-st-addr").findNext('div').text.split()[-1:][0]
+            return zip
+        except:
+            return 'None'
         return 'None'
+
+
 def get_num_beds(soup):
     try:
         lot_size_regex = re.compile('Beds:')
-        obj = soup.find(text=lot_size_regex).find_next()
-        return obj.text
-        #obj = soup.find_all("span",class_='addr_bbs')
-        #beds = obj[0].text.split()[0]
-        #return beds
+        numBeds = soup.find(text=lot_size_regex).find_next().text
+        return numBeds
     except:
+        try:
+            lot_size_regex = re.compile('Beds:')
+            numBeds = soup.find(text=lot_size_regex).find_next().text
+            return numBeds
+        except:
+            return 'None'
         return 'None'
     
 def get_num_baths(soup):
     try:
         lot_size_regex = re.compile('Bathrooms Full:')
-        obj = soup.find(text=lot_size_regex).find_next()
-        return obj.text
-        #obj = soup.find_all("span",class_='addr_bbs')
-        #beds = obj[1].text.split()[0]
-        #return beds
+        numBaths = soup.find(text=lot_size_regex).find_next().text
+        return numBaths
     except:
+        try:
+            lot_size_regex = re.compile('Bathrooms Full:')
+            numBaths = soup.find(text=lot_size_regex).find_next().text
+            return numBaths
+        except:
+            return 'None'
         return 'None'
     
 def get_floor_size(soup):
     try:
-        obj = soup.find_all("span",class_='addr_bbs')
-        floor_size_string = obj[2].text.split()[0]
-        floor_size = floor_size_string.replace(",","")
-        return floor_size
+        lot_size_regex = re.compile('Floor size:')
+        numBeds = soup.find(text=lot_size_regex).find_next().text
+        return numBeds
     except:
+        try:
+            lot_size_regex = re.compile('Floor size:')
+            numBeds = soup.find(text=lot_size_regex).find_next().text
+            return numBeds
+        except:
+            return 'None'
         return 'None'
     
 def get_year_built(soup):
