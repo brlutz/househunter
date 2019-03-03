@@ -144,8 +144,7 @@ def get_zip(soup):
         return zip
     except:
         try:
-
-            zip = soup.find("div",class_="hdp-home-header-st-addr").findNext('div').text.split()[-1:][0]
+            zip = soup.find("h1",class_="ds-address-container").findNext('span').findNext('span').text.split()[-1:][0]
             return zip
         except:
             return 'None'
@@ -158,50 +157,40 @@ def get_num_beds(soup):
         numBeds = soup.find(text=lot_size_regex).find_next().text
         return numBeds
     except:
-        try:
-            lot_size_regex = re.compile('Beds:')
-            numBeds = soup.find(text=lot_size_regex).find_next().text
-            return numBeds
-        except:
-            return 'None'
         return 'None'
     
 def get_num_baths(soup):
     try:
-        lot_size_regex = re.compile('Bathrooms Full:')
-        numBaths = soup.find(text=lot_size_regex).find_next().text
+        bath_number_regex = re.compile('Bathrooms Full:')
+        numBaths = soup.find(text=bath_number_regex).find_next().text
         return numBaths
     except:
-        try:
-            lot_size_regex = re.compile('Bathrooms Full:')
-            numBaths = soup.find(text=lot_size_regex).find_next().text
-            return numBaths
-        except:
-            return 'None'
         return 'None'
     
 def get_floor_size(soup):
     try:
-        lot_size_regex = re.compile('Floor size:')
-        numBeds = soup.find(text=lot_size_regex).find_next().text
-        return numBeds
+        floor_size_regex = re.compile('Floor size:')
+        floorSize = soup.find(text=floor_size_regex).find_next().text
+        return floorSize
     except:
-        try:
-            lot_size_regex = re.compile('Floor size:')
-            numBeds = soup.find(text=lot_size_regex).find_next().text
-            return numBeds
-        except:
-            return 'None'
         return 'None'
     
 def get_year_built(soup):
     try:
         objs = soup.find_all("span",class_='hdp-fact-value')
-        built_in_regex = re.compile('Built in')
+        built_in_regex = re.compile('Built in:')
         for obj in objs:
             out = obj.find(text=built_in_regex)
             if out is not None:
                 return out
+    except:
+        return 'None'
+
+def get_stories(soup):
+    try:
+        stories_regex = re.compile('Stories:')
+        stories = soup.find(text=stories_regex).find_next().text
+        return stories
     except:
         return 'None'
 
@@ -220,7 +209,6 @@ def get_html_data(url, driver):
     if error:
         driver.find_element_by_link_text("See more facts and features").click()
 
-    #driver.find_element_by_css_selector('.read-more').click()
     time.sleep(np.random.lognormal(0,1)+5)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     return soup
@@ -237,7 +225,7 @@ def get_house_data(driver,link):
     beds = get_num_beds(soup)
     baths = get_num_baths(soup)
     squareFeet = get_floor_size(soup)
-    stories = "stories"
+    stories = get_stories(soup)
     roomCount = "roomCount"
     parking = "parking"
     type = "type"
