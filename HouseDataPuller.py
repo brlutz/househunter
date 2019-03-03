@@ -113,14 +113,15 @@ def get_lot_size(soup):
         return 'None'
 def get_address(soup):
     try:
-        obj = soup.find("header",class_="zsg-content-header addr").text.split(',')
+        obj = soup.find(None,class_="hdp-home-header-st-addr").text.split(',')
         address = obj[0]
         return address
     except:
         return 'None'
 def get_city(soup):
     try:
-        obj = soup.find("header",class_="zsg-content-header addr").text.split(',')
+        obj = soup.find("header",class_="hdp-home-header-st-addr").findNext('div').text.split(',')
+        #obj = soup.find("header",class_="zsg-content-header addr").text.split(',')
         city = obj[1]
         return city
     except:
@@ -136,17 +137,23 @@ def get_zip(soup):
         return 'None'
 def get_num_beds(soup):
     try:
-        obj = soup.find_all("span",class_='addr_bbs')
-        beds = obj[0].text.split()[0]
-        return beds
+        lot_size_regex = re.compile('Beds:')
+        obj = soup.find(text=lot_size_regex).find_next()
+        return obj.text
+        #obj = soup.find_all("span",class_='addr_bbs')
+        #beds = obj[0].text.split()[0]
+        #return beds
     except:
         return 'None'
     
 def get_num_baths(soup):
     try:
-        obj = soup.find_all("span",class_='addr_bbs')
-        beds = obj[1].text.split()[0]
-        return beds
+        lot_size_regex = re.compile('Bathrooms Full:')
+        obj = soup.find(text=lot_size_regex).find_next()
+        return obj.text
+        #obj = soup.find_all("span",class_='addr_bbs')
+        #beds = obj[1].text.split()[0]
+        #return beds
     except:
         return 'None'
     
@@ -171,8 +178,22 @@ def get_year_built(soup):
         return 'None'
 
 def get_html_data(url, driver):
+    
+    
     driver.get(url)
-    time.sleep(np.random.lognormal(0,1))
+    time.sleep(np.random.lognormal(0,1)+10)
+    error = False
+    try:
+        driver.find_element_by_link_text("See More Facts and Features").click()
+        #driver.find_element_by_css_selector('.read-more').click()
+    except:
+        error = True
+    
+    if error:
+        driver.find_element_by_link_text("See more facts and features").click()
+
+    #driver.find_element_by_css_selector('.read-more').click()
+    time.sleep(np.random.lognormal(0,1)+5)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     return soup
 
