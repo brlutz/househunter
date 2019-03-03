@@ -128,7 +128,7 @@ def get_city(soup):
     try:
         city = soup.find("div",class_="hdp-home-header-st-addr").findNext('div').text.split(',')[0]
         #obj = soup.find("header",class_="zsg-content-header addr").text.split(',')
-        obj = soup.find("h1",class_="ds-address-container").findNext('span').text
+        #obj = soup.find("h1",class_="ds-address-container").findNext('span').text
         return city
     except:
         try:
@@ -177,12 +177,12 @@ def get_floor_size(soup):
     
 def get_year_built(soup):
     try:
-        objs = soup.find_all("span",class_='hdp-fact-value')
-        built_in_regex = re.compile('Built in:')
+        objs = soup.find_all("div",class_='fact-label')
+        built_in_regex = re.compile('Year Built')
         for obj in objs:
             out = obj.find(text=built_in_regex)
             if out is not None:
-                return out
+                return out.find_next().text
     except:
         return 'None'
 
