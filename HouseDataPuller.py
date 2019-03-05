@@ -26,7 +26,7 @@ class HouseDetail:
            type,yearBuilt,
            heating,cooling,
            lotSize,lotWidth,lotDepth,
-           highschool,middleschool,elementaryschool, hsdistance, msdistance, esdistance,
+           schoolDistrict, highschool,middleschool,elementaryschool, hsdistance, msdistance, esdistance,
            mlsNumber):
         self.Url = url
         self.Address = address
@@ -53,6 +53,7 @@ class HouseDetail:
         self.HSDistance = hsdistance
         self.MSDistance = msdistance
         self.ESDistance = esdistance
+        self.SchoolDistrict = schoolDistrict
         self.MLSNumber = mlsNumber
 
     def Seralized(self):
@@ -69,19 +70,20 @@ class HouseDetail:
         x["Stories"] = self.Stories 
         x["RoomCount"] = self.RoomCount 
         x["Parking"] = self.Parking 
-        x["Type"] = self.Type
+        #x["Type"] = self.Type
         x["YearBuilt"] = self.YearBuilt 
-        x["Heating"] = self.Heating
-        x["Cooling"] = self.Cooling
+        #x["Heating"] = self.Heating
+        #x["Cooling"] = self.Cooling
         x["LotSize"] = self.LotSize
-        x["LotWidth"] = self.LotWidth
-        x["LotDepth"] = self.LotDepth
-        x["Highschool"] = self.Highschool
-        x["Middleschool"] = self.Middleschool
-        x["Elementaryschool"] = self.Elementaryschool 
-        x["HSDistance"] = self.HSDistance 
-        x["MSDistance"] = self.MSDistance
-        x["ESDistance"] = self.ESDistance 
+        #x["LotWidth"] = self.LotWidth
+        #x["LotDepth"] = self.LotDepth
+        x["SchoolDistrict"] = self.SchoolDistrict
+        #x["Highschool"] = self.Highschool
+        #x["Middleschool"] = self.Middleschool
+        #x["Elementaryschool"] = self.Elementaryschool 
+        #x["HSDistance"] = self.HSDistance 
+        #x["MSDistance"] = self.MSDistance
+        #x["ESDistance"] = self.ESDistance 
         x["MLSNumber"] = self.MLSNumber
 
         return x
@@ -93,6 +95,12 @@ def get_price(soup):
         price = price.replace(",", "").replace("+", "").replace("$", "").lower()
         return int(price)
     except:
+        try:
+             price = soup.find(class_='ds-value').text
+             price = price.replace(",", "").replace("+", "").replace("$", "").lower()
+             return int(price)
+        except:
+            return np.nan
         return np.nan
     
 def get_sale_date(soup):
@@ -103,11 +111,27 @@ def get_sale_date(soup):
         return sale_date
     except:
         return 'None'
-    
+
 def get_lot_size(soup):
     try:
         lot_size_regex = re.compile('Lot:')
         obj = soup.find(text=lot_size_regex).find_next()
+        return obj.text
+    except:
+        return 'None'      
+
+def get_MLS_number(soup):
+    try:
+        mls_regex = re.compile('MLS #:')
+        obj = soup.find(text=mls_regex).find_next()
+        return obj.text
+    except:
+        return 'None'       
+    
+def get_school_district(soup):
+    try:
+        district_regex = re.compile('School district:')
+        obj = soup.find(text=district_regex).find_next()
         return obj.text
     except:
         return 'None'
@@ -243,13 +267,14 @@ def get_house_data(driver,link):
     lotSize = get_lot_size(soup)
     lotWidth = "lotWidth"
     lotDepth = "lotDepth"
+    schoolDistrict = get_school_district(soup)
     highschool = "highschool"
     middleschool = "middleschool"
     elementaryschool = "elementarySchool"
     hsdistance = "hsdistance"
     msdistance = "msdistance"
     esdistance = "esdistance"
-    mlsNumber = "mlsNumber"
+    mlsNumber = get_MLS_number(soup)
     sale_date = get_sale_date(soup)
     
     
@@ -260,7 +285,7 @@ def get_house_data(driver,link):
            type,yearBuilt,
            heating,cooling,
            lotSize,lotWidth,lotDepth,
-           highschool,middleschool,elementaryschool, hsdistance, msdistance, esdistance,
+           schoolDistrict,highschool,middleschool,elementaryschool, hsdistance, msdistance, esdistance,
            mlsNumber) 
 
     return result
@@ -285,7 +310,7 @@ links = []
 for house in sourceUrlObjs:
     houseData = get_house_data(driver, house["Url"])
     #houseData.Seralized()
-    attrs = vars(houseData)
+    attrs = vars(houseData.Seralized())
     print (', '.join("%s: %s" % item for item in attrs.items()))
 
 
